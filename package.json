@@ -36,7 +36,7 @@
         "typesafe-actions": "^3.0.0"
     },
     "scripts": {
-        "start": "cross-env PORT=3001 react-scripts start",
+        "start": "cross-env PORT=3001 HTTPS=true react-scripts start",
         "build": "react-scripts build",
         "test": "REACT_APP_NETWORK_ID=50 react-scripts test --env=node",
         "test-once": "cross-env CI=true react-scripts test --coverage",
