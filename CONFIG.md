@@ -11,7 +11,7 @@ The config file lives at `src/config.json`.
 ```json
 {
     "general": {
-        "title": "Launch Kit"
+        "title": "DEX"
     },
     "tokens": [
         {
@@ -163,7 +163,7 @@ There are a few general configuration options for Launch Kit.
 ```json
 {
     "general": {
-        "title": "Launch Kit",
+        "title": "DEX",
         "icon": "assets/icons/zrx.svg"
     }
 }

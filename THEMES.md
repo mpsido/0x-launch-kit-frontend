@@ -35,11 +35,11 @@ const modalThemeStyle: ThemeModalStyle = {
 };
 
 const darkThemeColors: ThemeProperties = {
-    background: '#000',
+    background: '#333',
     borderColor: '#5A5A5A',
     boxShadow: '0 10px 10px rgba(0, 0, 0, 0.1)',
     buttonConvertBackgroundColor: '#343434',
-    buttonConvertBorderColor: '#000',
+    buttonConvertBorderColor: '#333',
     buttonConvertTextColor: '#fff',
     .......
 };
