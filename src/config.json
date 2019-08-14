@@ -48,10 +48,20 @@
             }
         },
         {
+            "decimals": 6,
+            "symbol": "usdt",
+            "name": "Tether",
+            "icon": "assets/icons/weth.svg",
+            "primaryColor": "#DEA349",
+            "addresses": {
+                "1": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+            }
+        },
+        {
             "decimals": 4,
             "symbol": "yb",
             "name": "Yb",
-            "icon": "assets/icons/mkr.svg",
+            "icon": "assets/icons/weth.svg",
             "primaryColor": "#DEA349",
             "addresses": {
                 "1": "0xc4131c1893576e078a0b637b653f3e6a18e137ac"
@@ -134,6 +144,10 @@
         {
             "base": "dai",
             "quote": "weth"
+        },
+        {
+            "base": "weth",
+            "quote": "usdt"
         }
     ],
     "marketFilters": [
