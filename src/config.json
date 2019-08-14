@@ -48,6 +48,16 @@
             }
         },
         {
+            "decimals": 4,
+            "symbol": "yb",
+            "name": "Yb",
+            "icon": "assets/icons/mkr.svg",
+            "primaryColor": "#DEA349",
+            "addresses": {
+                "1": "0xc4131c1893576e078a0b637b653f3e6a18e137ac"
+            }
+        },
+        {
             "decimals": 18,
             "symbol": "mkr",
             "name": "Maker",
@@ -110,23 +120,19 @@
             "quote": "weth"
         },
         {
-            "base": "zrx",
+            "base": "weth",
             "quote": "dai"
         },
         {
-            "base": "mkr",
-            "quote": "weth"
+            "base": "weth",
+            "quote": "yb"
         },
         {
-            "base": "mln",
-            "quote": "weth"
+            "base": "dai",
+            "quote": "yb"
         },
         {
-            "base": "dgx",
-            "quote": "weth"
-        },
-        {
-            "base": "rep",
+            "base": "dai",
             "quote": "weth"
         }
     ],
