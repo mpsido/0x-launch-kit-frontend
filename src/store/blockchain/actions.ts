@@ -7,9 +7,10 @@ import { ConvertBalanceMustNotBeEqualException } from '../../exceptions/convert_
 import { SignedOrderException } from '../../exceptions/signed_order_exception';
 import { subscribeToFillEvents } from '../../services/exchange';
 import { getGasEstimationInfoAsync } from '../../services/gas_price_estimation';
+import { ImTokenSubprovider } from '../../services/imtoken_subprovider';
 import { LocalStorage } from '../../services/local_storage';
 import { tokensToTokenBalances, tokenToTokenBalance } from '../../services/tokens';
-import { isMetamaskInstalled } from '../../services/web3_wrapper';
+import { isImTokenInstalled, isMetamaskInstalled } from '../../services/web3_wrapper';
 import { getKnownTokens, isWeth } from '../../util/known_tokens';
 import { getLogger } from '../../util/logger';
 import { buildOrderFilledNotification } from '../../util/notifications';
@@ -482,9 +483,13 @@ export const createSignedCollectibleOrder: ThunkCreator = (
                     side,
                 );
             }
-
-            const provider = new MetamaskSubprovider(web3Wrapper.getProvider());
-            return signatureUtils.ecSignOrderAsync(provider, order, ethAccount);
+            if (isImTokenInstalled()) {
+                const provider = new ImTokenSubprovider(web3Wrapper.getProvider());
+                return signatureUtils.ecSignOrderAsync(provider, order, ethAccount);
+            } else {
+                const provider = new MetamaskSubprovider(web3Wrapper.getProvider());
+                return signatureUtils.ecSignOrderAsync(provider, order, ethAccount);
+            }
         } catch (error) {
             throw new SignedOrderException(error.message);
         }

@@ -9,6 +9,11 @@ export const isMetamaskInstalled = (): boolean => {
     return ethereum || web3;
 };
 
+export const isImTokenInstalled = (): boolean => {
+    const { ethereum, web3 } = window;
+    return (ethereum || web3) && window.ethereum.isImToken;
+};
+
 export const initializeWeb3Wrapper = async (): Promise<Web3Wrapper | null> => {
     const { ethereum, web3, location } = window;
 

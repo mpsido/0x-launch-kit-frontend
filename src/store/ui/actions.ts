@@ -5,6 +5,8 @@ import { COLLECTIBLE_ADDRESS } from '../../common/constants';
 import { InsufficientOrdersAmountException } from '../../exceptions/insufficient_orders_amount_exception';
 import { InsufficientTokenBalanceException } from '../../exceptions/insufficient_token_balance_exception';
 import { SignedOrderException } from '../../exceptions/signed_order_exception';
+import { ImTokenSubprovider } from '../../services/imtoken_subprovider';
+import { isImTokenInstalled } from '../../services/web3_wrapper';
 import { isWeth } from '../../util/known_tokens';
 import { buildLimitOrder, buildMarketOrders, isDutchAuction } from '../../util/orders';
 import {
@@ -289,8 +291,13 @@ export const createSignedOrder: ThunkCreator = (amount: BigNumber, price: BigNum
                 side,
             );
 
-            const provider = new MetamaskSubprovider(web3Wrapper.getProvider());
-            return signatureUtils.ecSignOrderAsync(provider, order, ethAccount);
+            if (isImTokenInstalled()) {
+                const provider = new ImTokenSubprovider(web3Wrapper.getProvider());
+                return signatureUtils.ecSignOrderAsync(provider, order, ethAccount);
+            } else {
+                const provider = new MetamaskSubprovider(web3Wrapper.getProvider());
+                return signatureUtils.ecSignOrderAsync(provider, order, ethAccount);
+            }
         } catch (error) {
             throw new SignedOrderException(error.message);
         }
