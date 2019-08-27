@@ -3,13 +3,10 @@ import { HttpClient, OrderConfigRequest, OrderConfigResponse, SignedOrder } from
 import { RateLimit } from 'async-sema';
 
 import { RELAYER_URL } from '../common/constants';
-import { getLogger } from '../util/logger';
 import { tokenAmountInUnitsToBigNumber } from '../util/tokens';
 import { Token } from '../util/types';
 
 import { getUserAuth } from './userAuth';
-
-const logger = getLogger('Services::Relayer');
 
 export class Relayer {
     private readonly _client: HttpClient;
@@ -21,24 +18,12 @@ export class Relayer {
     }
 
     public async getAllOrdersAsync(baseTokenAssetData: string, quoteTokenAssetData: string): Promise<SignedOrder[]> {
-        try {
-            const [sellOrders, buyOrders] = await Promise.all([
-                this._getOrdersAsync(baseTokenAssetData, quoteTokenAssetData),
-                this._getOrdersAsync(quoteTokenAssetData, baseTokenAssetData),
-            ]);
+        const [sellOrders, buyOrders] = await Promise.all([
+            this._getOrdersAsync(baseTokenAssetData, quoteTokenAssetData),
+            this._getOrdersAsync(quoteTokenAssetData, baseTokenAssetData),
+        ]);
 
-            return [...sellOrders, ...buyOrders];
-        } catch (error) {
-            logger.debug(error.constructor.name, (error as Error).message);
-            if ((error as Error).message.search('401') !== -1) {
-                await getUserAuth().getToken(
-                    '',
-                    'test@test.com',
-                    '$2b$10$4jpAS/RVa0drq2AdMaSJy.G0d0gNCPmYHz3xA/ZOe2z40mRFZZYda',
-                );
-            }
-            return [];
-        }
+        return [...sellOrders, ...buyOrders];
     }
 
     public async getOrderConfigAsync(orderConfig: OrderConfigRequest): Promise<OrderConfigResponse> {
@@ -52,24 +37,12 @@ export class Relayer {
         baseTokenAssetData: string,
         quoteTokenAssetData: string,
     ): Promise<SignedOrder[]> {
-        try {
-            const [sellOrders, buyOrders] = await Promise.all([
-                this._getOrdersAsync(baseTokenAssetData, quoteTokenAssetData, account),
-                this._getOrdersAsync(quoteTokenAssetData, baseTokenAssetData, account),
-            ]);
+        const [sellOrders, buyOrders] = await Promise.all([
+            this._getOrdersAsync(baseTokenAssetData, quoteTokenAssetData, account),
+            this._getOrdersAsync(quoteTokenAssetData, baseTokenAssetData, account),
+        ]);
 
-            return [...sellOrders, ...buyOrders];
-        } catch (error) {
-            logger.debug(error.constructor.name, (error as Error).message);
-            if ((error as Error).message.search('401') !== -1) {
-                await getUserAuth().getToken(
-                    '',
-                    'test@test.com',
-                    '$2b$10$4jpAS/RVa0drq2AdMaSJy.G0d0gNCPmYHz3xA/ZOe2z40mRFZZYda',
-                );
-            }
-            return [];
-        }
+        return [...sellOrders, ...buyOrders];
     }
 
     public async getCurrencyPairPriceAsync(baseToken: Token, quoteToken: Token): Promise<BigNumber | null> {

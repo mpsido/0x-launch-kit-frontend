@@ -15,22 +15,7 @@ const logger = getLogger('Services::UserAuth');
 
 export class UserAuthService {
     private _userToken: UserToken = new UserToken();
-
-    public getAuthOpts(): AuthOpts {
-        const requestOpts = {
-            authorization: `Bearer ${this._userToken.token}`,
-            userId: this._userToken.userId,
-        };
-        return requestOpts;
-    }
-
-    public async getToken(name: string, email: string, password: string): Promise<void> {
-        const userToken = await this.sendLoginData(name, email, password);
-        this._userToken = userToken;
-        logger.debug('Caught token', this._userToken);
-    }
-
-    public async sendLoginData(name: string, email: string, password: string): Promise<UserToken> {
+    public static async sendLoginData(name: string, email: string, password: string): Promise<UserToken> {
         return new Promise<UserToken>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', `${RELAYER_URL}login`);
@@ -56,6 +41,32 @@ export class UserAuthService {
                 }),
             );
         });
+    }
+
+    public getAuthOpts(): AuthOpts | any {
+        if (this.hasCredentials() === false) {
+            return {};
+        }
+        const requestOpts = {
+            authorization: `Bearer ${this._userToken.token}`,
+            userId: this._userToken.userId,
+        };
+        return requestOpts;
+    }
+
+    public async getToken(name: string, email: string, password: string): Promise<AuthOpts> {
+        const userToken = await UserAuthService.sendLoginData(name, email, password);
+        this._userToken = userToken;
+        logger.debug('Caught token', this._userToken);
+        return this.getAuthOpts();
+    }
+
+    public hasCredentials(): boolean {
+        return this._userToken.userId !== 0;
+    }
+
+    public logout(): void {
+        this._userToken = new UserToken();
     }
 }
 
