@@ -61,6 +61,15 @@ export interface BlockchainState {
     readonly convertBalanceState: ConvertBalanceState;
 }
 
+export interface UserState {
+    readonly token: string;
+    readonly email: string;
+    readonly userId: number;
+    readonly password: string;
+    readonly name: string;
+    readonly submitted: boolean;
+}
+
 export interface RelayerState {
     readonly orders: UIOrder[];
     readonly userOrders: UIOrder[];
@@ -85,6 +94,7 @@ export interface StoreState {
     readonly router: RouterState;
     readonly blockchain: BlockchainState;
     readonly relayer: RelayerState;
+    readonly user: UserState;
     readonly ui: UIState;
     readonly market: MarketState;
     readonly collectibles: CollectiblesState;
