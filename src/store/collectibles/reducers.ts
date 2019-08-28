@@ -14,7 +14,7 @@ export function collectibles(state: CollectiblesState = initialCollectibles, act
     switch (action.type) {
         case getType(actions.fetchAllCollectiblesAsync.success):
             const allCollectibles: { [key: string]: Collectible } = {};
-            action.payload.collectibles.forEach(collectible => {
+            action.payload.collectibles.forEach((collectible: Collectible) => {
                 allCollectibles[collectible.tokenId] = collectible;
             });
             const allCollectiblesFetchStatus = AllCollectiblesFetchStatus.Success;

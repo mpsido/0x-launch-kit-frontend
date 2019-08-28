@@ -20,8 +20,8 @@ export const createRootReducer = (history: History) =>
         router: connectRouter(history),
         blockchain,
         relayer,
+        user,
         ui,
         market,
         collectibles,
-        user,
     });

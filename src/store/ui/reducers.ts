@@ -1,6 +1,6 @@
 import { getType } from 'typesafe-actions';
 
-import { Step, StepsModalState, UIState } from '../../util/types';
+import { Notification, Step, StepsModalState, UIState } from '../../util/types';
 import * as actions from '../actions';
 import { RootAction } from '../reducers';
 
@@ -60,7 +60,7 @@ export function ui(state: UIState = initialUIState, action: RootAction): UIState
         case getType(actions.setNotifications):
             return { ...state, notifications: action.payload };
         case getType(actions.addNotifications): {
-            const newNotifications = action.payload.filter(notification => {
+            const newNotifications = action.payload.filter((notification: Notification) => {
                 const doesAlreadyExist = state.notifications
                     .filter(n => n.kind === notification.kind)
                     .some(n => n.id === notification.id);
