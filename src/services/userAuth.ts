@@ -15,7 +15,7 @@ const logger = getLogger('Services::UserAuth');
 
 export class UserAuthService {
     private _userToken: UserToken = new UserToken();
-    public static async sendLoginData(name: string, email: string, password: string): Promise<UserToken> {
+    public static async sendLoginData(email: string, password: string): Promise<UserToken> {
         return new Promise<UserToken>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', `${RELAYER_URL}login`);
@@ -29,6 +29,30 @@ export class UserAuthService {
                     userToken.token = (jsonResponse as any).token;
                     logger.debug(jsonResponse);
                     resolve(userToken);
+                } else {
+                    reject(xhr.status);
+                }
+            };
+            xhr.send(
+                JSON.stringify({
+                    email,
+                    password,
+                }),
+            );
+        });
+    }
+
+    public static async sendSignupData(name: string, email: string, password: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `${RELAYER_URL}signup`);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    logger.debug('Received login answer:', xhr.response);
+                    const jsonResponse = JSON.parse(xhr.response);
+                    logger.debug(jsonResponse);
+                    resolve();
                 } else {
                     reject(xhr.status);
                 }
@@ -54,11 +78,16 @@ export class UserAuthService {
         return requestOpts;
     }
 
-    public async getToken(name: string, email: string, password: string): Promise<AuthOpts> {
-        const userToken = await UserAuthService.sendLoginData(name, email, password);
+    public async getToken(email: string, password: string): Promise<AuthOpts> {
+        const userToken = await UserAuthService.sendLoginData(email, password);
         this._userToken = userToken;
         logger.debug('Caught token', this._userToken);
         return this.getAuthOpts();
+    }
+
+    public async signup(name: string, email: string, password: string): Promise<void> {
+        await UserAuthService.sendSignupData(name, email, password);
+        logger.debug('Signup complete');
     }
 
     public hasCredentials(): boolean {

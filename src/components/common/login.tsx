@@ -3,16 +3,21 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { AuthOpts } from '../../services/userAuth';
-import { login } from '../../store/user/actions';
-import { UserState } from '../../util/types';
+import { login, signup } from '../../store/user/actions';
+import { StoreState, UserState } from '../../util/types';
 
 interface DispatchProps {
-    onLogin: (user: string, email: string, password: string) => Promise<AuthOpts>;
+    onLogin: (email: string, password: string) => Promise<AuthOpts>;
+    onSignup: (user: string, email: string, password: string) => Promise<void>;
 }
 
-type Props = UserState & DispatchProps;
+interface UserViewState extends UserState {
+    readonly submitted: boolean;
+}
 
-class LoginModal extends React.Component<Props, UserState> {
+type Props = UserViewState & DispatchProps;
+
+class LoginModal extends React.Component<Props, UserViewState> {
     constructor(props: any) {
         super(props);
 
@@ -36,18 +41,58 @@ class LoginModal extends React.Component<Props, UserState> {
         this.setState({ [name]: value } as UserState);
     }
 
-    public handleSubmit(e: any): void {
+    public handleSubmit = (e: any): void => {
         e.preventDefault();
 
         this.setState({ submitted: true });
-        const { name, email, password } = this.state;
-        if (email && password) {
-            this.props.onLogin(name, email, password);
+        const { email, password } = this.state;
+        const re = new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);
+        if (re.test(email) === false) {
+            console.log(email, 'is not an email address');
+            return;
         }
-    }
+        if (email && password) {
+            // TODO the await does not really work
+            // const authOpts = await this.props.onLogin(email, password);
+            // console.log('Rendering Login', this.state, authOpts);
+            // this.render();
+
+            // TODO neither does promise fulfilment
+            // this.props
+            //     .onLogin(email, password)
+            //     .then(authOpts => {
+            //         // the promise succeeds but somehow authOpts is undefined here
+            //         console.log('Rendering Login', this.state, authOpts);
+            //         this.setState({ ...this.state, userId: authOpts.userId, token: authOpts.authorization });
+            //         this.render();
+            //     })
+            //     .catch(e => {
+            //         console.log('Rendering Login error', this.state, e);
+            //     });
+
+            // TODO neither does function wrapping
+            const wrap = (fn: any) => {
+                return () => {
+                    fn()
+                        .then((authOpts: AuthOpts) => {
+                            console.log('Rendering Login', this.state, authOpts);
+                            this.render();
+                        })
+                        .catch((e: Error) => {
+                            console.log('Rendering Login error', this.state, e);
+                        });
+                };
+            };
+            wrap(() => this.props.onLogin(email, password))();
+        }
+    };
 
     public render = () => {
-        const { email, password, submitted } = this.state;
+        console.log('Render', this.state);
+        const { email, password, submitted, userId } = this.state;
+        if (userId !== 0) {
+            return null;
+        }
         return (
             <div className="col-md-6 col-md-offset-3">
                 <h2>Login</h2>
@@ -86,21 +131,23 @@ class LoginModal extends React.Component<Props, UserState> {
     };
 }
 
-// const mapStateToProps = (state: StoreState): StateProps => {
-//     return {
-//         openSellOrders: getOpenSellOrders(state),
-//         openBuyOrders: getOpenBuyOrders(state),
-//     };
-// };
+const mapStateToProps = (state: StoreState): UserViewState => {
+    console.log('mapStateToProps', state.user);
+    return {
+        ...state.user,
+        submitted: false,
+    };
+};
 
 const mapDispatchToProps = (dispatch: any): DispatchProps => {
     return {
-        onLogin: (user: string, email: string, password: string) => dispatch(login(user, email, password)),
+        onLogin: (email: string, password: string) => dispatch(login(email, password)),
+        onSignup: (name: string, email: string, password: string) => dispatch(signup(name, email, password)),
     };
 };
 
 const LoginModalContainer = connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps,
 )(LoginModal);
 

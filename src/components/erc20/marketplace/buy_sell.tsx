@@ -307,12 +307,9 @@ class BuySell extends React.Component<Props, State> {
                 </>
             );
         } else {
-            // getUserAuth()
-            //     .getToken('', 'test0@test.com', '$2b$10$4jpAS/RVa0drq2AdMaSJy.G0d0gNCPmYHz3xA/ZOe2z40mRFZZYda')
-            //     .then(() => this.render());
             return (
                 <>
-                    <LoginModalContainer token={''} email={''} userId={0} password={''} name={''} submitted={false} />
+                    <LoginModalContainer />
                 </>
             );
         }

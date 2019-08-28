@@ -10,14 +10,30 @@ const initialUserState: UserState = {
     userId: 0,
     password: '',
     name: '',
-    submitted: false,
 };
 
 export function user(state: UserState = initialUserState, action: RootAction): UserState {
     switch (action.type) {
-        case getType(actions.setLoginCredentials):
-            console.log(action.payload);
-            return { ...state, token: action.payload.authorization, userId: action.payload.userId };
+        case getType(actions.setLoginCredentials): {
+            const newState = {
+                ...state,
+                ...action.payload,
+            };
+            console.log('Rendering User reducer', newState);
+            return newState;
+        }
+        case actions.userActions.loginError: {
+            console.log('Dispatched error');
+            return state;
+        }
+        case actions.userActions.logout: {
+            const newState = {
+                ...state,
+                token: '',
+                userId: 0,
+            };
+            return newState;
+        }
         default:
             return state;
     }

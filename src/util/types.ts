@@ -67,7 +67,6 @@ export interface UserState {
     readonly userId: number;
     readonly password: string;
     readonly name: string;
-    readonly submitted: boolean;
 }
 
 export interface RelayerState {
