@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
-import { getUserAuth } from '../../../services/userAuth';
 import { initWallet, startBuySellLimitSteps, startBuySellMarketSteps } from '../../../store/actions';
 import { fetchTakerAndMakerFee } from '../../../store/relayer/actions';
 import { getCurrencyPair, getOrderPriceSelected, getWeb3State } from '../../../store/selectors';
@@ -220,99 +219,87 @@ class BuySell extends React.Component<Props, State> {
         const btnText = error && error.btnMsg ? 'Error' : btnPrefix + tokenSymbolToDisplayString(currencyPair.base);
 
         const decimals = getKnownTokens().getTokenBySymbol(currencyPair.base).decimals;
-        const hasCredentials = getUserAuth().hasCredentials();
 
-        console.log('buy_sell render()', hasCredentials);
-        if (hasCredentials === true) {
-            // TODO hasCredentials should be part of the component state
-            return (
-                <>
-                    <BuySellWrapper>
-                        <TabsContainer>
-                            <TabButton
-                                isSelected={tab === OrderSide.Buy}
-                                onClick={this.changeTab(OrderSide.Buy)}
-                                side={OrderSide.Buy}
-                            >
-                                Buy
-                            </TabButton>
-                            <TabButton
-                                isSelected={tab === OrderSide.Sell}
-                                onClick={this.changeTab(OrderSide.Sell)}
-                                side={OrderSide.Sell}
-                            >
-                                Sell
-                            </TabButton>
-                        </TabsContainer>
-                        <Content>
-                            <LabelContainer>
-                                <Label>Amount</Label>
-                                <InnerTabs tabs={buySellInnerTabs} />
-                            </LabelContainer>
-                            <FieldContainer>
-                                <BigInputNumberStyled
-                                    decimals={decimals}
-                                    min={new BigNumber(0)}
-                                    onChange={this.updateMakerAmount}
-                                    value={makerAmount}
-                                    placeholder={'0.00'}
-                                />
-                                <BigInputNumberTokenLabel tokenSymbol={currencyPair.base} />
-                            </FieldContainer>
-                            {orderType === OrderType.Limit && (
-                                <>
-                                    <LabelContainer>
-                                        <Label>Price per token</Label>
-                                    </LabelContainer>
-                                    <FieldContainer>
-                                        <BigInputNumberStyled
-                                            decimals={0}
-                                            min={new BigNumber(0)}
-                                            onChange={this.updatePrice}
-                                            value={price}
-                                            placeholder={'0.00'}
-                                        />
-                                        <BigInputNumberTokenLabel tokenSymbol={currencyPair.quote} />
-                                    </FieldContainer>
-                                </>
-                            )}
-                            <OrderDetailsContainer
-                                orderType={orderType}
-                                orderSide={tab}
-                                tokenAmount={makerAmount || new BigNumber(0)}
-                                tokenPrice={price || new BigNumber(0)}
-                                currencyPair={currencyPair}
+        return (
+            <>
+                <BuySellWrapper>
+                    <TabsContainer>
+                        <TabButton
+                            isSelected={tab === OrderSide.Buy}
+                            onClick={this.changeTab(OrderSide.Buy)}
+                            side={OrderSide.Buy}
+                        >
+                            Buy
+                        </TabButton>
+                        <TabButton
+                            isSelected={tab === OrderSide.Sell}
+                            onClick={this.changeTab(OrderSide.Sell)}
+                            side={OrderSide.Sell}
+                        >
+                            Sell
+                        </TabButton>
+                    </TabsContainer>
+                    <Content>
+                        <LabelContainer>
+                            <Label>Amount</Label>
+                            <InnerTabs tabs={buySellInnerTabs} />
+                        </LabelContainer>
+                        <FieldContainer>
+                            <BigInputNumberStyled
+                                decimals={decimals}
+                                min={new BigNumber(0)}
+                                onChange={this.updateMakerAmount}
+                                value={makerAmount}
+                                placeholder={'0.00'}
                             />
-                            <Button
-                                disabled={
-                                    web3State !== Web3State.Done || orderTypeLimitIsEmpty || orderTypeMarketIsEmpty
-                                }
-                                icon={error && error.btnMsg ? ButtonIcons.Warning : undefined}
-                                onClick={this.submit}
-                                variant={
-                                    error && error.btnMsg
-                                        ? ButtonVariant.Error
-                                        : tab === OrderSide.Buy
-                                        ? ButtonVariant.Buy
-                                        : ButtonVariant.Sell
-                                }
-                            >
-                                {btnText}
-                            </Button>
-                        </Content>
-                    </BuySellWrapper>
-                    {error && error.cardMsg ? (
-                        <ErrorCard fontSize={FontSize.Large} text={error.cardMsg} icon={ErrorIcons.Sad} />
-                    ) : null}
-                </>
-            );
-        } else {
-            return (
-                <>
-                    <LoginModalContainer isOpen={false} />
-                </>
-            );
-        }
+                            <BigInputNumberTokenLabel tokenSymbol={currencyPair.base} />
+                        </FieldContainer>
+                        {orderType === OrderType.Limit && (
+                            <>
+                                <LabelContainer>
+                                    <Label>Price per token</Label>
+                                </LabelContainer>
+                                <FieldContainer>
+                                    <BigInputNumberStyled
+                                        decimals={0}
+                                        min={new BigNumber(0)}
+                                        onChange={this.updatePrice}
+                                        value={price}
+                                        placeholder={'0.00'}
+                                    />
+                                    <BigInputNumberTokenLabel tokenSymbol={currencyPair.quote} />
+                                </FieldContainer>
+                            </>
+                        )}
+                        <OrderDetailsContainer
+                            orderType={orderType}
+                            orderSide={tab}
+                            tokenAmount={makerAmount || new BigNumber(0)}
+                            tokenPrice={price || new BigNumber(0)}
+                            currencyPair={currencyPair}
+                        />
+                        <Button
+                            disabled={web3State !== Web3State.Done || orderTypeLimitIsEmpty || orderTypeMarketIsEmpty}
+                            icon={error && error.btnMsg ? ButtonIcons.Warning : undefined}
+                            onClick={this.submit}
+                            variant={
+                                error && error.btnMsg
+                                    ? ButtonVariant.Error
+                                    : tab === OrderSide.Buy
+                                    ? ButtonVariant.Buy
+                                    : ButtonVariant.Sell
+                            }
+                        >
+                            {btnText}
+                        </Button>
+                    </Content>
+                </BuySellWrapper>
+                {error && error.cardMsg ? (
+                    <ErrorCard fontSize={FontSize.Large} text={error.cardMsg} icon={ErrorIcons.Sad} />
+                ) : null}
+                <LoginModalContainer isOpen={false} />
+            </>
+        );
     };
 
     public changeTab = (tab: OrderSide) => () => this.setState({ tab });
