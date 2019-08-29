@@ -309,7 +309,7 @@ class BuySell extends React.Component<Props, State> {
         } else {
             return (
                 <>
-                    <LoginModalContainer submitted={false} register={false} />
+                    <LoginModalContainer isOpen={false} />
                 </>
             );
         }

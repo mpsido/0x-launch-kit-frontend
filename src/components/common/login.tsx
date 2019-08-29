@@ -4,10 +4,19 @@ import { connect } from 'react-redux';
 import { AuthOpts } from '../../services/userAuth';
 import { login, signup } from '../../store/user/actions';
 import { StoreState, UserState } from '../../util/types';
+import Modal from 'react-modal';
+import styled, { withTheme } from 'styled-components';
+import { Button } from './button';
+import { Theme } from '../../themes/commons';
 
 interface DispatchProps {
     onLogin: (email: string, password: string) => Promise<AuthOpts>;
     onSignup: (name: string, email: string, password: string) => Promise<void>;
+}
+
+interface OwnProps {
+    isOpen: boolean;
+    theme: Theme;
 }
 
 interface UserViewState extends UserState {
@@ -15,14 +24,34 @@ interface UserViewState extends UserState {
     readonly register: boolean;
 }
 
-type Props = UserViewState & DispatchProps;
+type Props = UserState & DispatchProps & OwnProps;
+
+const ModalContent = styled.div`
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow: auto;
+    width: 310px;
+`;
+
+const ModalTitle = styled.h1`
+    color: ${props => props.theme.componentsTheme.textColorCommon};
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0 0 25px;
+    text-align: center;
+`;
+
+const ButtonStyled = styled(Button)`
+    width: 100%;
+`;
 
 class LoginModal extends React.Component<Props, UserViewState> {
     constructor(props: any) {
         super(props);
 
-        // reset login status
-        // this.props.logout();
         this.state = {
             token: '',
             email: '',
@@ -55,6 +84,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
         if (register) {
             if (name && email && password) {
                 this.props.onSignup(name, email, password);
+                this.setState({ ...this.state, register: false });
             }
             return;
         }
@@ -65,64 +95,66 @@ class LoginModal extends React.Component<Props, UserViewState> {
 
     public render = () => {
         console.log('Render', this.state, this.props);
-        const { name, email, password, submitted } = this.state;
-        if (this.props.userId !== 0) {
-            return null;
-        }
+        const { email, name, password, submitted } = this.state;
+        const { theme } = this.props;
         return (
-            <div className="col-md-6 col-md-offset-3">
-                <h2>Login</h2>
-                <form name="form" onSubmit={this.handleSubmit}>
-                    <div
-                        className={'form-group' + (submitted && !name ? ' has-error' : '')}
-                        hidden={!this.state.register}
-                    >
-                        <label htmlFor="name">name</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="name"
-                            value={name}
-                            onChange={this.handleChange}
-                        />
-                        {submitted && !name && <div className="help-block">name is required</div>}
-                    </div>
-                    <div className={'form-group' + (submitted && !email ? ' has-error' : '')}>
-                        <label htmlFor="email">email</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="email"
-                            value={email}
-                            onChange={this.handleChange}
-                        />
-                        {submitted && !email && <div className="help-block">email is required</div>}
-                    </div>
-                    <div className={'form-group' + (submitted && !password ? ' has-error' : '')}>
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            name="password"
-                            value={password}
-                            onChange={this.handleChange}
-                        />
-                        {submitted && !password && <div className="help-block">Password is required</div>}
-                    </div>
-                    <div className="form-group">
-                        <button className="btn btn-primary">{this.state.register ? 'Register' : 'Login'}</button>
-                        <button
-                            className="btn btn-primary"
-                            onClick={e => {
-                                e.preventDefault();
-                                this.setState({ ...this.state, register: !this.state.register });
-                            }}
+            <Modal isOpen={this.props.userId === 0} style={theme.modalTheme}>
+                <ModalContent>
+                    <ModalTitle>Login</ModalTitle>
+                    <form name="form" onSubmit={this.handleSubmit}>
+                        <div
+                            className={'form-group' + (submitted && !name ? ' has-error' : '')}
+                            hidden={!this.state.register}
                         >
-                            {this.state.register ? 'Login' : 'Register'}
-                        </button>
-                    </div>
-                </form>
-            </div>
+                            <label htmlFor="name">name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="name"
+                                value={name}
+                                onChange={this.handleChange}
+                            />
+                            {submitted && !name && <div className="help-block">name is required</div>}
+                        </div>
+                        <div className={'form-group' + (submitted && !email ? ' has-error' : '')}>
+                            <label htmlFor="email">email</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="email"
+                                value={email}
+                                onChange={this.handleChange}
+                            />
+                            {submitted && !email && <div className="help-block">email is required</div>}
+                        </div>
+                        <div className={'form-group' + (submitted && !password ? ' has-error' : '')}>
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                name="password"
+                                value={password}
+                                onChange={this.handleChange}
+                            />
+                            {submitted && !password && <div className="help-block">Password is required</div>}
+                        </div>
+                        <div className="form-group">
+                            <ButtonStyled className="btn btn-primary">
+                                {this.state.register ? 'Register' : 'Login'}
+                            </ButtonStyled>
+                            <ButtonStyled
+                                className="btn btn-primary"
+                                onClick={e => {
+                                    e.preventDefault();
+                                    this.setState({ ...this.state, register: !this.state.register });
+                                }}
+                            >
+                                {this.state.register ? 'Login' : 'Register'}
+                            </ButtonStyled>
+                        </div>
+                    </form>
+                </ModalContent>
+            </Modal>
         );
     };
 }
@@ -141,9 +173,11 @@ const mapDispatchToProps = (dispatch: any): DispatchProps => {
     };
 };
 
-const LoginModalContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(LoginModal);
+const LoginModalContainer = withTheme(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    )(LoginModal),
+);
 
 export { LoginModalContainer };
