@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 import { AuthOpts } from '../../services/userAuth';
 import { login, signup } from '../../store/user/actions';
@@ -8,11 +7,12 @@ import { StoreState, UserState } from '../../util/types';
 
 interface DispatchProps {
     onLogin: (email: string, password: string) => Promise<AuthOpts>;
-    onSignup: (user: string, email: string, password: string) => Promise<void>;
+    onSignup: (name: string, email: string, password: string) => Promise<void>;
 }
 
 interface UserViewState extends UserState {
     readonly submitted: boolean;
+    readonly register: boolean;
 }
 
 type Props = UserViewState & DispatchProps;
@@ -30,6 +30,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
             password: '',
             name: '',
             submitted: false,
+            register: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -45,58 +46,47 @@ class LoginModal extends React.Component<Props, UserViewState> {
         e.preventDefault();
 
         this.setState({ submitted: true });
-        const { email, password } = this.state;
+        const { email, name, password, register } = this.state;
         const re = new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);
         if (re.test(email) === false) {
             console.log(email, 'is not an email address');
             return;
         }
+        if (register) {
+            if (name && email && password) {
+                this.props.onSignup(name, email, password);
+            }
+            return;
+        }
         if (email && password) {
-            // TODO the await does not really work
-            // const authOpts = await this.props.onLogin(email, password);
-            // console.log('Rendering Login', this.state, authOpts);
-            // this.render();
-
-            // TODO neither does promise fulfilment
-            // this.props
-            //     .onLogin(email, password)
-            //     .then(authOpts => {
-            //         // the promise succeeds but somehow authOpts is undefined here
-            //         console.log('Rendering Login', this.state, authOpts);
-            //         this.setState({ ...this.state, userId: authOpts.userId, token: authOpts.authorization });
-            //         this.render();
-            //     })
-            //     .catch(e => {
-            //         console.log('Rendering Login error', this.state, e);
-            //     });
-
-            // TODO neither does function wrapping
-            const wrap = (fn: any) => {
-                return () => {
-                    fn()
-                        .then((authOpts: AuthOpts) => {
-                            console.log('Rendering Login', this.state, authOpts);
-                            this.render();
-                        })
-                        .catch((e: Error) => {
-                            console.log('Rendering Login error', this.state, e);
-                        });
-                };
-            };
-            wrap(() => this.props.onLogin(email, password))();
+            this.props.onLogin(email, password);
         }
     };
 
     public render = () => {
-        console.log('Render', this.state);
-        const { email, password, submitted, userId } = this.state;
-        if (userId !== 0) {
+        console.log('Render', this.state, this.props);
+        const { name, email, password, submitted } = this.state;
+        if (this.props.userId !== 0) {
             return null;
         }
         return (
             <div className="col-md-6 col-md-offset-3">
                 <h2>Login</h2>
                 <form name="form" onSubmit={this.handleSubmit}>
+                    <div
+                        className={'form-group' + (submitted && !name ? ' has-error' : '')}
+                        hidden={!this.state.register}
+                    >
+                        <label htmlFor="name">name</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="name"
+                            value={name}
+                            onChange={this.handleChange}
+                        />
+                        {submitted && !name && <div className="help-block">name is required</div>}
+                    </div>
                     <div className={'form-group' + (submitted && !email ? ' has-error' : '')}>
                         <label htmlFor="email">email</label>
                         <input
@@ -120,10 +110,16 @@ class LoginModal extends React.Component<Props, UserViewState> {
                         {submitted && !password && <div className="help-block">Password is required</div>}
                     </div>
                     <div className="form-group">
-                        <button className="btn btn-primary">Login</button>
-                        <Link to="/register" className="btn btn-link">
-                            Register
-                        </Link>
+                        <button className="btn btn-primary">{this.state.register ? 'Register' : 'Login'}</button>
+                        <button
+                            className="btn btn-primary"
+                            onClick={e => {
+                                e.preventDefault();
+                                this.setState({ ...this.state, register: !this.state.register });
+                            }}
+                        >
+                            {this.state.register ? 'Login' : 'Register'}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -131,11 +127,10 @@ class LoginModal extends React.Component<Props, UserViewState> {
     };
 }
 
-const mapStateToProps = (state: StoreState): UserViewState => {
+const mapStateToProps = (state: StoreState): UserState => {
     console.log('mapStateToProps', state.user);
     return {
         ...state.user,
-        submitted: false,
     };
 };
 

@@ -13,28 +13,19 @@ export const login: ThunkCreator = (email: string, password: string) => {
     return async (dispatch, getState) => {
         try {
             const credentials = await getUserAuth().getToken(email, password);
-            // console.log('Rendering credential success', credentials);
             dispatch(setLoginCredentials(credentials));
-            // dispatch({type: userActions.login, ...credentials });
         } catch (e) {
             console.log('Login failed');
             dispatch({ type: userActions.loginError, e });
             return null;
         }
-        // getUserAuth().getToken(email, password).then(credentials => {
-        //     dispatch(setLoginCredentials(credentials));
-        // }).catch(e => {
-        //     console.log("Login failed");
-        //     return null;
-        // });
     };
 };
 
 export const signup: ThunkCreator = (name: string, email: string, password: string) => {
     return async (dispatch, getState) => {
-        const state = getState();
         getUserAuth()
-            .signup(state.user.name, email, password)
+            .signup(name, email, password)
             .then(credentials => {
                 dispatch({ type: userActions.signup });
             })
