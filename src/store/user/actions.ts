@@ -44,7 +44,7 @@ export const setLoginCredentials = createAction(userActions.login, resolve => {
     return (credentials: AuthOpts) => resolve(credentials);
 });
 
-export const logout = () => {
+export const logout: ThunkCreator = () => {
     getUserAuth().logout();
     return { type: userActions.logout, ...getUserAuth().getAuthOpts() };
 };

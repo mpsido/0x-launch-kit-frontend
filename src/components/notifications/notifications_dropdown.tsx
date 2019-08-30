@@ -3,12 +3,20 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 import { setHasUnreadNotifications } from '../../store/actions';
-import { getEstimatedTxTimeMs, getHasUnreadNotifications, getNotifications } from '../../store/selectors';
+import {
+    getEstimatedTxTimeMs,
+    getHasUnreadNotifications,
+    getNotifications,
+    getUserConnected,
+} from '../../store/selectors';
 import { themeDimensions } from '../../themes/commons';
 import { Notification, StoreState } from '../../util/types';
 import { CardBase } from '../common/card_base';
+import { Logo } from '../common/logo';
 import { Dropdown, DropdownPositions } from '../common/dropdown';
+import { logout } from '../../store/user/actions';
 import { BellIcon } from '../common/icons/bell_icon';
+import { LockIcon } from '../common/icons/lock_icon';
 
 import { NotificationItem } from './notification_item';
 
@@ -16,12 +24,18 @@ interface StateProps {
     estimatedTxTimeMs: number;
     notifications: Notification[];
     hasUnreadNotifications: boolean;
+    userConnected: boolean;
 }
 interface DispatchProps {
+    onLogout: () => any;
     onMarkNotificationsAsRead: () => any;
 }
 
 type Props = HTMLAttributes<HTMLDivElement> & StateProps & DispatchProps;
+
+const LogoutIcon = styled(Logo)`
+    margin-left: 10px;
+`;
 
 const NotificationsDropdownWrapper = styled(Dropdown)`
     z-index: 100;
@@ -78,6 +92,8 @@ class NotificationsDropdown extends React.Component<Props, {}> {
             notifications,
             hasUnreadNotifications,
             onMarkNotificationsAsRead,
+            onLogout,
+            userConnected,
             ...restProps
         } = this.props;
 
@@ -89,6 +105,7 @@ class NotificationsDropdown extends React.Component<Props, {}> {
             <NotificationsDropdownHeader>
                 <BellIcon />
                 {hasUnreadNotifications ? <NewNotificationsBadge /> : null}
+                {userConnected ? <LogoutIcon text="" onClick={onLogout} image={<LockIcon />} /> : null}
             </NotificationsDropdownHeader>
         );
 
@@ -122,10 +139,12 @@ const mapStateToProps = (state: StoreState): StateProps => {
         estimatedTxTimeMs: getEstimatedTxTimeMs(state),
         notifications: getNotifications(state),
         hasUnreadNotifications: getHasUnreadNotifications(state),
+        userConnected: getUserConnected(state),
     };
 };
 const mapDispatchToProps = {
     onMarkNotificationsAsRead: () => setHasUnreadNotifications(false),
+    onLogout: () => logout(),
 };
 const NotificationsDropdownContainer = connect(
     mapStateToProps,

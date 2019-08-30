@@ -245,7 +245,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
                                 placeholder={submitted && !password ? 'Password is required' : ''}
                             />
                             <div className="form-group">
-                                <ButtonStyled className="btn btn-primary" disabled={false} register={register}>
+                                <ButtonStyled className="btn btn-primary" register={register}>
                                     {register ? 'Register' : 'Login'}
                                 </ButtonStyled>
                             </div>

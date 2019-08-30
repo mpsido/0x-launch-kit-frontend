@@ -32,6 +32,7 @@ export const getHasUnreadNotifications = (state: StoreState) => state.ui.hasUnre
 export const getStepsModalPendingSteps = (state: StoreState) => state.ui.stepsModal.pendingSteps;
 export const getStepsModalDoneSteps = (state: StoreState) => state.ui.stepsModal.doneSteps;
 export const getStepsModalCurrentStep = (state: StoreState) => state.ui.stepsModal.currentStep;
+export const getUserConnected = (state: StoreState) => state.user.userId !== 0;
 export const getCurrencyPair = (state: StoreState) => state.market.currencyPair;
 export const getBaseToken = (state: StoreState) => state.market.baseToken;
 export const getQuoteToken = (state: StoreState) => state.market.quoteToken;
