@@ -63,7 +63,7 @@ export class UserAuthService {
             xhr.open('POST', `${RELAYER_URL}signup`);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = () => {
-                if (xhr.status === 200) {
+                if (xhr.status === 201) {
                     logger.debug('Received login answer:', xhr.response);
                     const jsonResponse = JSON.parse(xhr.response);
                     logger.debug(jsonResponse);

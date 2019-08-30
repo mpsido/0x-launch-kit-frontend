@@ -119,6 +119,15 @@ const LabelError = styled.span`
     font-size: 12px;
 `;
 
+const LabelSuccess = styled.span`
+    color: ${props => props.theme.componentsTheme.green};
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1.2;
+    margin-right: 15px;
+    font-size: 12px;
+`;
+
 class LoginModal extends React.Component<Props, UserViewState> {
     constructor(props: any) {
         super(props);
@@ -133,6 +142,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
             register: false,
             loginError: '',
             tabChange: false,
+            signupSuccess: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -156,7 +166,6 @@ class LoginModal extends React.Component<Props, UserViewState> {
         if (register) {
             if (name && email && password) {
                 this.props.onSignup(name, email, password);
-                this.setState({ ...this.state, register: false });
             }
             return;
         }
@@ -167,7 +176,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
 
     public render = () => {
         const { email, name, password, register, submitted } = this.state;
-        const { loginError, theme } = this.props;
+        const { loginError, signupSuccess, theme } = this.props;
         return (
             <Modal isOpen={this.props.userId === 0} style={theme.modalTheme}>
                 {' '}
@@ -194,8 +203,9 @@ class LoginModal extends React.Component<Props, UserViewState> {
                     </TabsContainer>
                     <form name="form" onSubmit={this.handleSubmit}>
                         <Content>
-                            <LabelContainer hidden={this.state.tabChange}>
-                                <LabelError hidden={this.state.tabChange}>{loginError}</LabelError>
+                            <LabelContainer>
+                                <LabelSuccess hidden={!signupSuccess}>Signup success!</LabelSuccess>
+                                <LabelError hidden={signupSuccess || this.state.tabChange}>{loginError}</LabelError>
                             </LabelContainer>
                             <LabelContainer
                                 className={'form-group' + (submitted && !name ? ' has-error' : '')}

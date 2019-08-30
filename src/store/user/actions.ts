@@ -26,7 +26,7 @@ export const signup: ThunkCreator = (name: string, email: string, password: stri
     return async (dispatch, getState) => {
         getUserAuth()
             .signup(name, email, password)
-            .then(credentials => {
+            .then(() => {
                 dispatch({ type: userActions.signup });
             })
             .catch(e => {

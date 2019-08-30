@@ -11,6 +11,7 @@ const initialUserState: UserState = {
     password: '',
     name: '',
     loginError: '',
+    signupSuccess: false,
 };
 
 export function user(state: UserState = initialUserState, action: RootAction): UserState {
@@ -37,6 +38,12 @@ export function user(state: UserState = initialUserState, action: RootAction): U
                 userId: 0,
             };
             return newState;
+        }
+        case actions.userActions.signup: {
+            return {
+                ...state,
+                signupSuccess: true,
+            };
         }
         default:
             return state;

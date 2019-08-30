@@ -68,6 +68,7 @@ export interface UserState {
     readonly password: string;
     readonly name: string;
     readonly loginError: string;
+    readonly signupSuccess: boolean;
 }
 
 export interface RelayerState {
