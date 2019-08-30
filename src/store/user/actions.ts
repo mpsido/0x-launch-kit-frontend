@@ -1,5 +1,5 @@
 import { createAction } from 'typesafe-actions';
-import { AuthOpts, getUserAuth } from '../../services/userAuth';
+import { AuthOpts, getUserAuth, UserLoginError } from '../../services/userAuth';
 import { ThunkCreator } from '../../util/types';
 
 export const userActions = {
@@ -15,8 +15,8 @@ export const login: ThunkCreator = (email: string, password: string) => {
             const credentials = await getUserAuth().getToken(email, password);
             dispatch(setLoginCredentials(credentials));
         } catch (e) {
-            console.log('Login failed');
-            dispatch({ type: userActions.loginError, e });
+            console.log('Login failed', e);
+            dispatch(loginErrorAction(e));
             return null;
         }
     };
@@ -30,10 +30,15 @@ export const signup: ThunkCreator = (name: string, email: string, password: stri
                 dispatch({ type: userActions.signup });
             })
             .catch(e => {
-                console.log('Signup failed');
+                console.log('Signup failed', e);
+                dispatch(loginErrorAction(e));
             });
     };
 };
+
+export const loginErrorAction = createAction(userActions.loginError, resolve => {
+    return (loginError: UserLoginError) => resolve(loginError);
+});
 
 export const setLoginCredentials = createAction(userActions.login, resolve => {
     return (credentials: AuthOpts) => resolve(credentials);

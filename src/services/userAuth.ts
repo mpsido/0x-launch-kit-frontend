@@ -11,11 +11,26 @@ export class AuthOpts {
     public userId: number = 0;
 }
 
+export class UserLoginError {
+    public status: number;
+    public message: string;
+
+    constructor(status: number, responseObject: string) {
+        this.status = status;
+        let responseText = '';
+        try {
+            responseText = JSON.parse(responseObject)['message'];
+        } finally {
+            this.message = responseText;
+        }
+    }
+}
+
 const logger = getLogger('Services::UserAuth');
 
 export class UserAuthService {
     private _userToken: UserToken = new UserToken();
-    public static async sendLoginData(email: string, password: string): Promise<UserToken> {
+    public static async sendLoginData(email: string, password: string): Promise<UserToken | UserLoginError> {
         return new Promise<UserToken>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', `${RELAYER_URL}login`);
@@ -30,7 +45,7 @@ export class UserAuthService {
                     logger.debug(jsonResponse);
                     resolve(userToken);
                 } else {
-                    reject(xhr.status);
+                    reject(new UserLoginError(xhr.status, xhr.responseText));
                 }
             };
             xhr.send(
@@ -42,7 +57,7 @@ export class UserAuthService {
         });
     }
 
-    public static async sendSignupData(name: string, email: string, password: string): Promise<void> {
+    public static async sendSignupData(name: string, email: string, password: string): Promise<void | UserLoginError> {
         return new Promise<void>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', `${RELAYER_URL}signup`);
@@ -54,7 +69,7 @@ export class UserAuthService {
                     logger.debug(jsonResponse);
                     resolve();
                 } else {
-                    reject(xhr.status);
+                    reject(new UserLoginError(xhr.status, xhr.responseText));
                 }
             };
             xhr.send(
@@ -80,7 +95,7 @@ export class UserAuthService {
 
     public async getToken(email: string, password: string): Promise<AuthOpts> {
         const userToken = await UserAuthService.sendLoginData(email, password);
-        this._userToken = userToken;
+        this._userToken = userToken as UserToken;
         logger.debug('Caught token', this._userToken);
         return this.getAuthOpts();
     }

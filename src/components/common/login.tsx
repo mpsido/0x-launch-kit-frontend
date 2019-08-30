@@ -23,6 +23,7 @@ interface OwnProps {
 interface UserViewState extends UserState {
     readonly submitted: boolean;
     readonly register: boolean;
+    readonly tabChange: boolean;
 }
 
 type Props = UserState & DispatchProps & OwnProps;
@@ -109,6 +110,15 @@ const Label = styled.span`
     margin-right: 15px;
 `;
 
+const LabelError = styled.span`
+    color: ${props => props.theme.componentsTheme.red};
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1.2;
+    margin-right: 15px;
+    font-size: 12px;
+`;
+
 class LoginModal extends React.Component<Props, UserViewState> {
     constructor(props: any) {
         super(props);
@@ -121,6 +131,8 @@ class LoginModal extends React.Component<Props, UserViewState> {
             name: '',
             submitted: false,
             register: false,
+            loginError: '',
+            tabChange: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -135,11 +147,10 @@ class LoginModal extends React.Component<Props, UserViewState> {
     public handleSubmit = (e: any): void => {
         e.preventDefault();
 
-        this.setState({ submitted: true });
+        this.setState({ submitted: true, tabChange: false });
         const { email, name, password, register } = this.state;
         const re = new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);
         if (re.test(email) === false) {
-            console.log(email, 'is not an email address');
             return;
         }
         if (register) {
@@ -155,9 +166,8 @@ class LoginModal extends React.Component<Props, UserViewState> {
     };
 
     public render = () => {
-        console.log('Render', this.state, this.props);
         const { email, name, password, register, submitted } = this.state;
-        const { theme } = this.props;
+        const { loginError, theme } = this.props;
         return (
             <Modal isOpen={this.props.userId === 0} style={theme.modalTheme}>
                 {' '}
@@ -165,14 +175,18 @@ class LoginModal extends React.Component<Props, UserViewState> {
                     <TabsContainer>
                         <TabButton
                             isSelected={!register}
-                            onClick={() => this.setState({ ...this.state, register: false })}
+                            onClick={() => {
+                                this.setState({ ...this.state, register: false, tabChange: true });
+                            }}
                             register={false}
                         >
                             Login
                         </TabButton>
                         <TabButton
                             isSelected={register}
-                            onClick={() => this.setState({ ...this.state, register: true })}
+                            onClick={() => {
+                                this.setState({ ...this.state, register: true, tabChange: true });
+                            }}
                             register={true}
                         >
                             Register
@@ -180,6 +194,9 @@ class LoginModal extends React.Component<Props, UserViewState> {
                     </TabsContainer>
                     <form name="form" onSubmit={this.handleSubmit}>
                         <Content>
+                            <LabelContainer hidden={this.state.tabChange}>
+                                <LabelError hidden={this.state.tabChange}>{loginError}</LabelError>
+                            </LabelContainer>
                             <LabelContainer
                                 className={'form-group' + (submitted && !name ? ' has-error' : '')}
                                 hidden={!this.state.register}
@@ -231,7 +248,6 @@ class LoginModal extends React.Component<Props, UserViewState> {
 }
 
 const mapStateToProps = (state: StoreState): UserState => {
-    console.log('mapStateToProps', state.user);
     return {
         ...state.user,
     };

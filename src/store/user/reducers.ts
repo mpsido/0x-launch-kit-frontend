@@ -10,6 +10,7 @@ const initialUserState: UserState = {
     userId: 0,
     password: '',
     name: '',
+    loginError: '',
 };
 
 export function user(state: UserState = initialUserState, action: RootAction): UserState {
@@ -23,8 +24,11 @@ export function user(state: UserState = initialUserState, action: RootAction): U
             return newState;
         }
         case actions.userActions.loginError: {
-            console.log('Dispatched error');
-            return state;
+            const newState = {
+                ...state,
+                loginError: action.payload.message,
+            };
+            return newState;
         }
         case actions.userActions.logout: {
             const newState = {
