@@ -19,7 +19,7 @@ export class UserLoginError {
         this.status = status;
         let responseText = '';
         try {
-            responseText = JSON.parse(responseObject)['message'];
+            responseText = JSON.parse(responseObject)['message'].toString();
         } finally {
             this.message = responseText;
         }

@@ -13,7 +13,7 @@ import { relayer } from './relayer/reducers';
 import { ui } from './ui/reducers';
 import { user } from './user/reducers';
 
-export type RootAction = ActionType<typeof actions>;
+export type RootAction = ActionType<typeof actions> & { payload: any };
 
 export const createRootReducer = (history: History) =>
     combineReducers<StoreState>({
