@@ -21,7 +21,6 @@ export function user(state: UserState = initialUserState, action: RootAction): U
                 ...state,
                 ...action.payload,
             };
-            console.log('Rendering User reducer', newState);
             return newState;
         }
         case actions.userActions.loginError: {

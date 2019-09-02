@@ -9,14 +9,14 @@ import {
     getNotifications,
     getUserConnected,
 } from '../../store/selectors';
+import { logout } from '../../store/user/actions';
 import { themeDimensions } from '../../themes/commons';
 import { Notification, StoreState } from '../../util/types';
 import { CardBase } from '../common/card_base';
-import { Logo } from '../common/logo';
 import { Dropdown, DropdownPositions } from '../common/dropdown';
-import { logout } from '../../store/user/actions';
 import { BellIcon } from '../common/icons/bell_icon';
 import { LockIcon } from '../common/icons/lock_icon';
+import { Logo } from '../common/logo';
 
 import { NotificationItem } from './notification_item';
 

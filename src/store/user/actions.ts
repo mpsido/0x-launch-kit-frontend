@@ -1,6 +1,10 @@
 import { createAction } from 'typesafe-actions';
-import { AuthOpts, getUserAuth, UserLoginError } from '../../services/userAuth';
+
+import { AuthOpts, getUserAuth, UserAuthService, UserLoginError } from '../../services/userAuth';
+import { getLogger } from '../../util/logger';
 import { ThunkCreator } from '../../util/types';
+
+const logger = getLogger('Services::UserAuth');
 
 export const userActions = {
     login: 'user/LOGIN',
@@ -15,7 +19,7 @@ export const login: ThunkCreator = (email: string, password: string) => {
             const credentials = await getUserAuth().getToken(email, password);
             dispatch(setLoginCredentials(credentials));
         } catch (e) {
-            console.log('Login failed', e);
+            logger.debug('Login failed', e);
             dispatch(loginErrorAction(e));
             return null;
         }
@@ -24,13 +28,12 @@ export const login: ThunkCreator = (email: string, password: string) => {
 
 export const signup: ThunkCreator = (name: string, email: string, password: string) => {
     return async (dispatch, getState) => {
-        getUserAuth()
-            .signup(name, email, password)
+        UserAuthService.signup(name, email, password)
             .then(() => {
                 dispatch({ type: userActions.signup });
             })
             .catch(e => {
-                console.log('Signup failed', e);
+                logger.debug('Signup failed', e);
                 dispatch(loginErrorAction(e));
             });
     };

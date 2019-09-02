@@ -19,7 +19,7 @@ export class UserLoginError {
         this.status = status;
         let responseText = '';
         try {
-            responseText = JSON.parse(responseObject)['message'].toString();
+            responseText = JSON.parse(responseObject).message.toString();
         } finally {
             this.message = responseText;
         }
@@ -82,6 +82,11 @@ export class UserAuthService {
         });
     }
 
+    public static async signup(name: string, email: string, password: string): Promise<void> {
+        await UserAuthService.sendSignupData(name, email, password);
+        logger.debug('Signup complete');
+    }
+
     public getAuthOpts(): AuthOpts | any {
         if (this.hasCredentials() === false) {
             return {};
@@ -98,11 +103,6 @@ export class UserAuthService {
         this._userToken = userToken as UserToken;
         logger.debug('Caught token', this._userToken);
         return this.getAuthOpts();
-    }
-
-    public async signup(name: string, email: string, password: string): Promise<void> {
-        await UserAuthService.sendSignupData(name, email, password);
-        logger.debug('Signup complete');
     }
 
     public hasCredentials(): boolean {

@@ -1,14 +1,14 @@
 import React from 'react';
+import Modal from 'react-modal';
 import { connect } from 'react-redux';
+import styled, { withTheme } from 'styled-components';
 
 import { AuthOpts } from '../../services/userAuth';
 import { login, signup } from '../../store/user/actions';
+import { Theme, themeDimensions } from '../../themes/commons';
 import { StoreState, UserState } from '../../util/types';
-import Modal from 'react-modal';
-import styled, { withTheme } from 'styled-components';
+
 import { Button } from './button';
-import { Theme } from '../../themes/commons';
-import { themeDimensions } from '../../themes/commons';
 
 interface DispatchProps {
     onLogin: (email: string, password: string) => Promise<AuthOpts>;
@@ -151,7 +151,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
 
     public handleChange(e: any): void {
         const { name, value } = e.target;
-        this.setState({ [name]: value } as UserState);
+        this.setState(({ [name]: value } as any) as UserState);
     }
 
     public handleSubmit = (e: any): void => {
@@ -208,7 +208,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
                                 <LabelError hidden={signupSuccess || this.state.tabChange}>{loginError}</LabelError>
                             </LabelContainer>
                             <LabelContainer
-                                className={'form-group' + (submitted && !name ? ' has-error' : '')}
+                                className={`form-group ${submitted && !name ? ' has-error' : ''}`}
                                 hidden={!this.state.register}
                             >
                                 <Label hidden={!this.state.register}>Name</Label>
@@ -222,7 +222,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
                                 onChange={this.handleChange}
                                 placeholder={submitted && !name ? 'name is required' : ''}
                             />
-                            <LabelContainer className={'form-group' + (submitted && !email ? ' has-error' : '')}>
+                            <LabelContainer className={`form-group ${submitted && !email ? ' has-error' : ''}`}>
                                 <Label>Email</Label>
                             </LabelContainer>
                             <Input
@@ -233,7 +233,7 @@ class LoginModal extends React.Component<Props, UserViewState> {
                                 onChange={this.handleChange}
                                 placeholder={submitted && !email ? 'email is required' : ''}
                             />
-                            <LabelContainer className={'form-group' + (submitted && !password ? ' has-error' : '')}>
+                            <LabelContainer className={`form-group ${submitted && !password ? ' has-error' : ''}`}>
                                 <Label>Password</Label>
                             </LabelContainer>
                             <Input
